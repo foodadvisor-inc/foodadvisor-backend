@@ -10,11 +10,10 @@ router = routers.DefaultRouter()
 router.register(r'users', api_views.UserViewSet)
 schema_view = get_schema_view(title='USERS API', renderer_classes=[OpenAPIRenderer, SwaggerUIRenderer])
 
-# TODO: change users/users to models/users or other
 
 urlpatterns = [
     re_path(r'^admin/', admin.site.urls),
     re_path(r'^schema/', schema_view, name="docs"),
-    re_path(r'^users/', include(router.urls), name="users"),
-    re_path(r'api/', include('api.urls')),
+    re_path(r'^models/', include(router.urls), name="models"),
+    re_path(r'auth/', include('api.urls')),
 ]
