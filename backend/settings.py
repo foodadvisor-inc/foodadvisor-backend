@@ -26,10 +26,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'rest_framework_swagger',
     'rest_framework.authtoken',
-    'corsheaders',
     'rest_auth',
+    'rest_framework_swagger',
+    'corsheaders',
     'django.contrib.sites',
     'allauth',
     'allauth.account',
@@ -40,7 +40,7 @@ INSTALLED_APPS = [
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 SITE_ID = 1
-
+ACCOUNT_LOGOUT_ON_GET = True
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
