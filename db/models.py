@@ -84,3 +84,4 @@ class Meal(m):
 
 class Category(m):
     pass
+
