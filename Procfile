@@ -1,0 +1,1 @@
+web: gunicorn foodadvisor_backend.wsgi --log-file -
