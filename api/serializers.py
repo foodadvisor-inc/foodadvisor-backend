@@ -7,7 +7,7 @@ from api.models import Profile
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
-        fields = ('gender', 'birth_date', 'height', 'weight')
+        fields = ('gender', 'birth_date', 'height', 'weight', 'goal')
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):

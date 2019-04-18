@@ -12,9 +12,9 @@ SECRET_KEY = os.environ.get('APP_SECRET_KEY', 'unsafe-secret-key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # TODO: use environ
-DEBUG = True
+DEBUG = (os.environ.get('DEBUG', 'False') == 'True')
 
-ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost').split(',')
+ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', '').split(',')
 
 # Application definition
 
@@ -26,11 +26,21 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'rest_framework_swagger',
     'rest_framework.authtoken',
+    'rest_auth',
+    'rest_framework_swagger',
     'corsheaders',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'rest_auth.registration',
     'api',
 ]
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+SITE_ID = 1
+ACCOUNT_LOGOUT_ON_GET = True
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -69,7 +79,7 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': os.environ.get('APP_DB_ENGINE', 'django.db.backends.postgresql'),
         'NAME': os.environ.get('DB_NAME', 'db.postgres'),
         'USER': os.environ.get('DB_USER', ''),
         'PASSWORD': os.environ.get('DB_PASSWORD', ''),
@@ -112,76 +122,76 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
-
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'filters': {
-        'require_debug_false': {
-            '()': 'django.utils.log.RequireDebugFalse'
-        },
-        'require_debug_true': {
-            '()': 'django.utils.log.RequireDebugTrue'
-        }
-    },
-    'formatters': {
-        'main_formatter': {
-            'format': '%(levelname)s:%(name)s: %(message)s '
-                      '(%(asctime)s; %(filename)s:%(lineno)d)',
-            'datefmt': "%Y-%m-%d %H:%M:%S",
-        },
-    },
-    'handlers': {
-        'console': {
-            'level': 'DEBUG',
-            'filters': ['require_debug_true'],
-            'class': 'logging.StreamHandler',
-            'formatter': 'main_formatter',
-        },
-        'production_file': {
-            'level': 'INFO',
-            'filters': ['require_debug_false'],
-            'class': 'logging.handlers.RotatingFileHandler',
-            'formatter': 'main_formatter',
-            'filename': os.path.join(BASE_DIR, 'logs/main.log'),
-            'maxBytes': 1024 * 1024 * 5,
-            'backupCount': 7,
-        },
-        'debug_file': {
-            'level': 'DEBUG',
-            'filters': ['require_debug_true'],
-            'class': 'logging.handlers.RotatingFileHandler',
-            'formatter': 'main_formatter',
-            'filename': os.path.join(BASE_DIR, 'logs/main_debug.log'),
-            'maxBytes': 1024 * 1024 * 5,
-            'backupCount': 7,
-        },
-        'null': {
-            "class": 'logging.NullHandler',
-        },
-        # TODO: uncomment to enable logging to Rollbar
-        # 'rollbar': {
-        #     'level': 'INFO',
-        #     'filters': ['require_debug_true'],
-        #     'class': 'rollbar.logger.RollbarHandler',
-        #     'access_token': os.environ.get('ROLLBAR_TOKEN'),
-        #     'environment': 'development',
-        # },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['null', ],
-        },
-        'py.warnings': {
-            'handlers': ['null', ],
-        },
-        '': {
-            'handlers': ['console', 'production_file', 'debug_file',  # 'rollbar'
-                         ],
-            'level': "DEBUG",
-        },
-    }
-}
+#
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'filters': {
+#         'require_debug_false': {
+#             '()': 'django.utils.log.RequireDebugFalse'
+#         },
+#         'require_debug_true': {
+#             '()': 'django.utils.log.RequireDebugTrue'
+#         }
+#     },
+#     'formatters': {
+#         'main_formatter': {
+#             'format': '%(levelname)s:%(name)s: %(message)s '
+#                       '(%(asctime)s; %(filename)s:%(lineno)d)',
+#             'datefmt': "%Y-%m-%d %H:%M:%S",
+#         },
+#     },
+#     'handlers': {
+#         'console': {
+#             'level': 'DEBUG',
+#             'filters': ['require_debug_true'],
+#             'class': 'logging.StreamHandler',
+#             'formatter': 'main_formatter',
+#         },
+#         'production_file': {
+#             'level': 'INFO',
+#             'filters': ['require_debug_false'],
+#             'class': 'logging.handlers.RotatingFileHandler',
+#             'formatter': 'main_formatter',
+#             'filename': os.path.join(BASE_DIR, 'logs/main.log'),
+#             'maxBytes': 1024 * 1024 * 5,
+#             'backupCount': 7,
+#         },
+#         'debug_file': {
+#             'level': 'DEBUG',
+#             'filters': ['require_debug_true'],
+#             'class': 'logging.handlers.RotatingFileHandler',
+#             'formatter': 'main_formatter',
+#             'filename': os.path.join(BASE_DIR, 'logs/main_debug.log'),
+#             'maxBytes': 1024 * 1024 * 5,
+#             'backupCount': 7,
+#         },
+#         'null': {
+#             "class": 'logging.NullHandler',
+#         },
+#         # TODO: uncomment to enable logging to Rollbar
+#         # 'rollbar': {
+#         #     'level': 'INFO',
+#         #     'filters': ['require_debug_true'],
+#         #     'class': 'rollbar.logger.RollbarHandler',
+#         #     'access_token': os.environ.get('ROLLBAR_TOKEN'),
+#         #     'environment': 'development',
+#         # },
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ['null', ],
+#         },
+#         'py.warnings': {
+#             'handlers': ['null', ],
+#         },
+#         '': {
+#             'handlers': ['console', 'production_file', 'debug_file',  # 'rollbar'
+#                          ],
+#             'level': "DEBUG",
+#         },
+#     }
+# }
 
 SWAGGER_SETTINGS = {
     'exclude_url_names': [],
