@@ -16,6 +16,8 @@ DEBUG = (os.environ.get('DEBUG', 'False') == 'True')
 
 ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', '').split(',')
 
+APPEND_SLASH = True
+
 # Application definition
 
 INSTALLED_APPS = [
