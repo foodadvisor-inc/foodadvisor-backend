@@ -59,6 +59,10 @@ CATEGORY_CHOICES = (
 class Goal(models.Model):
     name = models.CharField(max_length=50)
     description = models.CharField(max_length=300)
+    proteins_coefficient = models.PositiveSmallIntegerField(blank=True, null=True,
+                                                            validators=[MaxValueValidator(100000)])
+    fat_coefficient = models.PositiveSmallIntegerField(blank=True, null=True, validators=[MaxValueValidator(100000)])
+    carbs_coefficient = models.PositiveSmallIntegerField(blank=True, null=True, validators=[MaxValueValidator(100000)])
 
 
 class Profile(models.Model):
@@ -72,21 +76,20 @@ class Profile(models.Model):
     weight = models.PositiveSmallIntegerField(blank=True, null=True, validators=[MaxValueValidator(500000)])
 
 
+class UserUsefulEnergy(models.Model):
+    goal = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    calories = models.PositiveSmallIntegerField(blank=True, null=True, validators=[MaxValueValidator(100000)])
+    proteins = models.PositiveSmallIntegerField(blank=True, null=True, validators=[MaxValueValidator(100000)])
+    fat = models.PositiveSmallIntegerField(blank=True, null=True, validators=[MaxValueValidator(100000)])
+    carbs = models.PositiveSmallIntegerField(blank=True, null=True, validators=[MaxValueValidator(100000)])
+
+
 class GoalMealPlan(models.Model):
     goal = models.ForeignKey(Goal, on_delete=models.CASCADE)
 
     meal = models.PositiveSmallIntegerField(choices=MEAL_CHOICES, default=MEAL_FIRST_COURSE,
                                             blank=False, null=False)
-    order_number = models.IntegerField()
-
-
-class GoalUsefulEnergy(models.Model):
-    goal = models.OneToOneField(Goal, on_delete=models.CASCADE, primary_key=True)
-
-    calories = models.PositiveSmallIntegerField(blank=True, null=True, validators=[MaxValueValidator(100000)])
-    proteins = models.PositiveSmallIntegerField(blank=True, null=True, validators=[MaxValueValidator(100000)])
-    fat = models.PositiveSmallIntegerField(blank=True, null=True, validators=[MaxValueValidator(100000)])
-    carbohydrates = models.PositiveSmallIntegerField(blank=True, null=True, validators=[MaxValueValidator(100000)])
+    meal_order = models.IntegerField()
 
 
 class Dish(models.Model):
@@ -101,8 +104,10 @@ class DishUsefulEnergy(models.Model):
     calories = models.PositiveSmallIntegerField(blank=True, null=True, validators=[MaxValueValidator(100000)])
     proteins = models.PositiveSmallIntegerField(blank=True, null=True, validators=[MaxValueValidator(100000)])
     fat = models.PositiveSmallIntegerField(blank=True, null=True, validators=[MaxValueValidator(100000)])
-    carbohydrates = models.PositiveSmallIntegerField(blank=True, null=True, default=0,
-                                                     validators=[MaxValueValidator(100000)])
+    carbs = models.PositiveSmallIntegerField(blank=True, null=True, default=0,
+                                             validators=[MaxValueValidator(100000)])
+    meal = models.PositiveSmallIntegerField(choices=MEAL_CHOICES, default=MEAL_FIRST_COURSE,
+                                            blank=False, null=False)
 
 
 class Ingredient(models.Model):
@@ -118,7 +123,7 @@ class IngredientUsefulEnergy(models.Model):
     calories = models.PositiveSmallIntegerField(blank=True, null=True, validators=[MaxValueValidator(100000)])
     proteins = models.PositiveSmallIntegerField(blank=True, null=True, validators=[MaxValueValidator(100000)])
     fat = models.PositiveSmallIntegerField(blank=True, null=True, validators=[MaxValueValidator(100000)])
-    carbohydrates = models.PositiveSmallIntegerField(blank=True, null=True, validators=[MaxValueValidator(100000)])
+    carbs = models.PositiveSmallIntegerField(blank=True, null=True, validators=[MaxValueValidator(100000)])
 
 
 class DishIngredient(models.Model):
@@ -126,37 +131,30 @@ class DishIngredient(models.Model):
     dish = models.ForeignKey(Dish, on_delete=models.CASCADE)
 
 
-class FridgeDish(models.Model):
-    fridge = models.ForeignKey(Profile, on_delete=models.CASCADE)
-    dish = models.ForeignKey(Dish, on_delete=models.CASCADE)
-
-    weight = models.PositiveSmallIntegerField(blank=True, null=True, validators=[MaxValueValidator(500000)])
-
-
 class FridgeIngredient(models.Model):
-    fridge = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    user = models.ForeignKey(Profile, on_delete=models.CASCADE)
     ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
 
     weight = models.PositiveSmallIntegerField(blank=True, null=True, validators=[MaxValueValidator(500000)])
 
 
 class UserIngredient(models.Model):
-    preferences = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    user = models.ForeignKey(Profile, on_delete=models.CASCADE)
     ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
 
     rate = models.PositiveSmallIntegerField(blank=True, null=True, validators=[MaxValueValidator(500000)])
 
 
 class UserCategory(models.Model):
-    preferences = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    user = models.ForeignKey(Profile, on_delete=models.CASCADE)
 
     category = models.PositiveSmallIntegerField(choices=CATEGORY_CHOICES, default=CATEGORY_MEAT,
                                                 blank=False, null=False)
 
 
 class UserMealPlan(models.Model):
-    preferences = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    user = models.ForeignKey(Profile, on_delete=models.CASCADE)
 
     meal = models.PositiveSmallIntegerField(choices=MEAL_CHOICES, default=MEAL_FIRST_COURSE,
                                             blank=False, null=False)
-    order_number = models.IntegerField(blank=True, null=True)
+    meal_order = models.IntegerField(blank=True, null=True)
