@@ -1,7 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-
-from api.models import Profile
+from api.models import Profile, Goal
 
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -32,3 +31,15 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         Profile.objects.create(user=user, **profile_data)
 
         return user
+
+
+class GoalSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Goal
+        fields = ('id', 'name', 'description', 'proteins_coefficient', 'fat_coefficient', 'carbs_coefficient')
+
+
+class GoalSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Goal
+        fields = ('id', 'name', 'description', 'proteins_coefficient', 'fat_coefficient', 'carbs_coefficient')

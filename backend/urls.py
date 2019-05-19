@@ -4,7 +4,7 @@ from rest_framework import routers
 from rest_framework.schemas import get_schema_view
 from rest_framework_swagger.renderers import SwaggerUIRenderer, OpenAPIRenderer
 
-from api import views as api_views
+from api import views as api_views, views
 
 router = routers.DefaultRouter()
 router.register(r'users', api_views.UserViewSet)
@@ -16,4 +16,6 @@ urlpatterns = [
     re_path(r'^schema/', schema_view, name="docs"),
     re_path(r'^models/', include(router.urls), name="models"),
     re_path(r'auth/', include('api.urls')),
+    re_path(r'^goal/', views.GoalList.as_view()),
+    re_path(r'^goal/<int:pk>/', views.GoalDetail.as_view()),
 ]
