@@ -18,12 +18,8 @@ class CurrentProfile(views.APIView):
     """Current User Profile endpoint"""
     permission_classes = (IsAuthenticated,)
 
-
-
     def get(self, request, format=None):
-
         profile = Profile.objects.get(user=request.user)
-
         return JsonResponse(ProfileSerializer(profile).data, status=status.HTTP_200_OK, safe=False)
 
     def post(self, request, format=None):
@@ -53,11 +49,21 @@ class CurrentUserGoal(views.APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, format=None):
-
+        """
+            Get *goal*
+            ---
+            response_serializer: GoalSerializer
+            """
         profile = Profile.objects.get(user=request.user)
         return JsonResponse(GoalSerializer(profile.goal).data, status=status.HTTP_200_OK, safe=False)
 
     def post(self, request, format=None):
+        """
+            Post *goal*
+            ---
+            request_serializer: ProfileSerializer
+            response_serializer: ProfileSerializer
+            """
         profile = request.data
         profile['user'] = request.user.id
         serializer = ProfileSerializer(data=profile, partial=True)
@@ -124,3 +130,54 @@ class CurrentUserCategory(views.APIView):
             ctgr = get_choice(category, CATEGORY_CHOICES)
             ctgr = UserCategory.objects.get(Q(user_id=request.user.id), Q(category=ctgr)).delete()
         return HttpResponse(status=status.HTTP_204_NO_CONTENT)
+
+
+class CurrentUserIngredient(views.APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, format=None):
+        response = []
+        ingredients = UserIngredient.objects.filter(user=request.user)
+        for ingredient in ingredients:
+            response.append(UserCategorySerializer(ingredient).data)
+
+        return JsonResponse(response, status=status.HTTP_200_OK, safe=False)
+
+    def post(self, request, format=None):
+        """
+        ---
+
+        parameters:
+            - name: user
+              type: integer
+              paramType: form
+              required: true
+            - name: ingredient
+              type: integer
+              paramType: form
+              required: true
+        """
+        ingredients = request.data['ingredient']
+        result = []
+        for ingredient in ingredients:
+            serializer = UserIngredientSerializer(data={'user': request.user.id,
+                                                        'ingredient': ingredient})
+            if (serializer.is_valid(raise_exception=True)):
+                ctgr, created = serializer.save(serializer.validated_data)
+                if created:
+                    result.append(UserIngredientSerializer(ctgr).data)
+
+        return JsonResponse(result, status=status.HTTP_201_CREATED, safe=False)
+
+    def put(self, request, format=None):
+        ingredients = request.data['ingredients']
+        result = []
+        for ingredient in ingredients:
+            serializer = UserIngredientSerializer(data={'user': request.user.id,
+                                                        'ingredient': ingredient})
+            if (serializer.is_valid()):
+                ctgr, created = serializer.save(serializer.validated_data)
+                if created:
+                    result.append(UserIngredientSerializer(ctgr).data)
+
+        return JsonResponse(result, status=status.HTTP_201_CREATED, safe=False)
