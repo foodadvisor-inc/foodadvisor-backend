@@ -1,5 +1,9 @@
 from django.contrib import admin
 
-from api.models import Profile
+from api.models import *
 
-admin.site.register(Profile)
+Models = (Profile, UserCategory, UserIngredient, UserMealPlan, UserUsefulEnergy,
+          IngredientUsefulEnergy, Ingredient, GoalMealPlan, Goal, FridgeIngredient,
+          DishIngredient, Dish)
+
+admin.site.register(Models)
