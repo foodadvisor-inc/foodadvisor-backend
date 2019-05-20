@@ -1,13 +1,44 @@
-from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from api.models import Profile
+from api.models import *
+
+
+class GoalSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Goal
+        fields = '__all__'
+
+
+
+class UserCategorySerializer(serializers.ModelSerializer):
+    category = serializers.CharField(source='get_category_display')
+    class Meta:
+        model = UserCategory
+        fields = '__all__'
+
+    def save(self, validated_data):
+        user = validated_data.pop('user')
+        current_category = validated_data.pop('get_category_display')
+        instance, created = UserCategory.objects.update_or_create(user=user, category=current_category, defaults=validated_data)
+        return instance, created
 
 
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
-        fields = ('gender', 'birth_date', 'height', 'weight', 'goal')
+        fields = '__all__'
+        extra_kwargs = {
+            'user': {'validators': []},
+        }
+
+
+    def save(self, validated_data):
+        user = validated_data.pop('user')
+        instance, created = Profile.objects.update_or_create(user=user, defaults=validated_data)
+        return instance,created
+
+
+
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -20,15 +51,3 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
     # TODO: create verifications
 
-    def create(self, validated_data):
-        profile_data = validated_data.pop('profile')
-        password = validated_data.pop('password')
-
-        user = User(**validated_data)
-        user.set_password(password)
-
-        user.save()
-
-        Profile.objects.create(user=user, **profile_data)
-
-        return user

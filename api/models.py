@@ -66,7 +66,7 @@ class Goal(models.Model):
 
 
 class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
     goal = models.ForeignKey(Goal, null=True, on_delete=models.SET_NULL)
 
     birth_date = models.DateField(null=True, blank=True)
@@ -77,7 +77,7 @@ class Profile(models.Model):
 
 
 class UserUsefulEnergy(models.Model):
-    goal = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     calories = models.PositiveSmallIntegerField(blank=True, null=True, validators=[MaxValueValidator(100000)])
     proteins = models.PositiveSmallIntegerField(blank=True, null=True, validators=[MaxValueValidator(100000)])
     fat = models.PositiveSmallIntegerField(blank=True, null=True, validators=[MaxValueValidator(100000)])
@@ -132,28 +132,28 @@ class DishIngredient(models.Model):
 
 
 class FridgeIngredient(models.Model):
-    user = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
 
     weight = models.PositiveSmallIntegerField(blank=True, null=True, validators=[MaxValueValidator(500000)])
 
 
 class UserIngredient(models.Model):
-    user = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
 
     rate = models.PositiveSmallIntegerField(blank=True, null=True, validators=[MaxValueValidator(500000)])
 
 
 class UserCategory(models.Model):
-    user = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE,)
 
     category = models.PositiveSmallIntegerField(choices=CATEGORY_CHOICES, default=CATEGORY_MEAT,
                                                 blank=False, null=False)
 
 
 class UserMealPlan(models.Model):
-    user = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     meal = models.PositiveSmallIntegerField(choices=MEAL_CHOICES, default=MEAL_FIRST_COURSE,
                                             blank=False, null=False)

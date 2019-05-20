@@ -1,14 +1,16 @@
-from django.contrib import admin
 from django.urls import re_path, include
-
+from rest_framework import routers
 from rest_framework.schemas import get_schema_view
 from rest_framework_swagger.renderers import SwaggerUIRenderer, OpenAPIRenderer
 
+from api import views as api_views
+
+router = routers.DefaultRouter()
+router.register(r'users', api_views.UserViewSet)
 schema_view = get_schema_view(title='USERS API', renderer_classes=[OpenAPIRenderer, SwaggerUIRenderer])
 
 urlpatterns = [
-    re_path(r'^admin/', admin.site.urls),
-    re_path(r'^schema/', schema_view, name="docs"),
-    re_path(r'auth/', include('api.urls')),
-    re_path(r'api/', include('foodadvisor.urls'))
+
+    re_path(r'^models/', include(router.urls), name="models"),
+    re_path(r'^user/', include('profile.urls')),
 ]
