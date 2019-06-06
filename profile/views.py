@@ -198,3 +198,13 @@ class CurrentUserIngredient(views.APIView):
                     result.append(UserIngredientSerializer(ctgr).data)
 
         return JsonResponse(result, status=status.HTTP_201_CREATED, safe=False)
+
+    def delete(self, request, format=None):
+
+        """
+        Delete categories for current user
+        """
+        ingredients = request.data['ingredients']
+        for ingredient in ingredients:
+            UserIngredient.objects.get(ingredient.id).delete()
+        return HttpResponse(status=status.HTTP_204_NO_CONTENT)
