@@ -16,6 +16,13 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
 
 
+class IngredientViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint for Ingredients
+    """
+    queryset = Ingredient.objects.all()
+    serializer_class = IngredientSerializer
+
+
 class GoogleLogin(SocialLoginView):
     adapter_class = GoogleOAuth2Adapter
-

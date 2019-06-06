@@ -7,7 +7,9 @@ from api import views as api_views
 
 router = routers.DefaultRouter()
 router.register(r'users', api_views.UserViewSet)
+router.register(r'ingredients', api_views.IngredientViewSet)
 schema_view = get_schema_view(title='USERS API', renderer_classes=[OpenAPIRenderer, SwaggerUIRenderer])
+
 
 urlpatterns = [
 
