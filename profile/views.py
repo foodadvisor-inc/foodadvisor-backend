@@ -139,7 +139,7 @@ class CurrentUserIngredient(views.APIView):
         response = []
         ingredients = UserIngredient.objects.filter(user=request.user)
         for ingredient in ingredients:
-            response.append(UserCategorySerializer(ingredient).data)
+            response.append(UserIngredientSerializer(ingredient).data)
 
         return JsonResponse(response, status=status.HTTP_200_OK, safe=False)
 
@@ -157,7 +157,7 @@ class CurrentUserIngredient(views.APIView):
               paramType: form
               required: true
         """
-        ingredients = request.data['ingredient']
+        ingredients = request.data['ingredients']
         result = []
         for ingredient in ingredients:
             serializer = UserIngredientSerializer(data={'user': request.user.id,
