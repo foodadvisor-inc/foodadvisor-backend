@@ -38,6 +38,7 @@ class UserIngredientSerializer(serializers.ModelSerializer):
 
 
 class ProfileSerializer(serializers.ModelSerializer):
+    gender = serializers.CharField(source='get_gender_display')
     class Meta:
         model = Profile
         fields = '__all__'
@@ -47,6 +48,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     def save(self, validated_data):
         user = validated_data.pop('user')
+        validated_data['gender'] = validated_data.pop('get_gender_display')
         instance, created = Profile.objects.update_or_create(user=user, defaults=validated_data)
         return instance, created
 
@@ -73,6 +75,7 @@ class IngredientUsefulEnergySerializer(serializers.ModelSerializer):
 
 class IngredientSerializer(serializers.ModelSerializer):
     useful_energy = IngredientUsefulEnergySerializer(required=True, source='ingredientusefulenergy')
+    category = serializers.CharField(source='get_category_display')
 
     class Meta:
         model = Ingredient

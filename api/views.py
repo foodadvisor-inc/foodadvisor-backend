@@ -5,9 +5,6 @@ from rest_framework import viewsets
 from .serializers import *
 
 
-# from api.serializers import UserSerializer
-
-
 class UserViewSet(viewsets.ModelViewSet):
     """
     API endpoint for USERS
