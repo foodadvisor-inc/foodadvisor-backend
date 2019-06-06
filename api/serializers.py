@@ -79,4 +79,4 @@ class IngredientSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Ingredient
-        fields = ('name', 'category', 'image_url', 'useful_energy')
+        fields = ('id', 'name', 'category', 'image_url', 'useful_energy')
