@@ -5,6 +5,7 @@ from rest_framework import views
 from rest_framework.permissions import IsAuthenticated
 
 from api.serializers import *
+from profile.schemas import CurrentUserCategorySchema
 
 
 def get_choice(display_value, choices):
@@ -87,9 +88,14 @@ class CurrentUserGoal(views.APIView):
 
 
 class CurrentUserCategory(views.APIView):
+    schema = CurrentUserCategorySchema()
+
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, format=None):
+        """
+        Get list of current users categories
+        """
         response = []
         categories = UserCategory.objects.filter(user=request.user)
         for category in categories:
@@ -98,6 +104,10 @@ class CurrentUserCategory(views.APIView):
         return JsonResponse(response, status=status.HTTP_200_OK, safe=False)
 
     def post(self, request, format=None):
+
+        """
+        Add categories for current user
+        """
         categories = request.data['categories']
         result = []
         for category in categories:
@@ -111,6 +121,9 @@ class CurrentUserCategory(views.APIView):
         return JsonResponse(result, status=status.HTTP_201_CREATED, safe=False)
 
     def put(self, request, format=None):
+        """
+        Add categories for current user
+        """
         categories = request.data['categories']
         result = []
         for category in categories:
@@ -125,6 +138,10 @@ class CurrentUserCategory(views.APIView):
         return JsonResponse(result, status=status.HTTP_201_CREATED, safe=False)
 
     def delete(self, request, format=None):
+
+        """
+        Delete categories for current user
+        """
         categories = request.data['categories']
         for category in categories:
             ctgr = get_choice(category, CATEGORY_CHOICES)
