@@ -40,6 +40,7 @@ CATEGORY_PEANUT = 7
 CATEGORY_SOY = 8
 CATEGORY_EGG = 9
 CATEGORY_NUT = 10
+CATEGORY_NONE = 11
 
 CATEGORY_CHOICES = (
     (CATEGORY_MEAT, "meat"),
@@ -53,6 +54,7 @@ CATEGORY_CHOICES = (
     (CATEGORY_SOY, "soy"),
     (CATEGORY_EGG, "egg"),
     (CATEGORY_NUT, "tree nut"),
+    (CATEGORY_NONE, "none"),
 )
 
 
