@@ -9,9 +9,9 @@ class GoalSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-
 class UserCategorySerializer(serializers.ModelSerializer):
     category = serializers.CharField(source='get_category_display')
+
     class Meta:
         model = UserCategory
         fields = '__all__'
@@ -19,7 +19,21 @@ class UserCategorySerializer(serializers.ModelSerializer):
     def save(self, validated_data):
         user = validated_data.pop('user')
         current_category = validated_data.pop('get_category_display')
-        instance, created = UserCategory.objects.update_or_create(user=user, category=current_category, defaults=validated_data)
+        instance, created = UserCategory.objects.update_or_create(user=user, category=current_category,
+                                                                  defaults=validated_data)
+        return instance, created
+
+
+class UserIngredientSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserIngredient
+        fields = '__all__'
+
+    def save(self, validated_data):
+        user = validated_data.pop('user')
+        current_ingredient = validated_data.pop('ingredient')
+        instance, created = UserIngredient.objects.update_or_create(user=user, ingredient=current_ingredient,
+                                                                    defaults=validated_data)
         return instance, created
 
 
@@ -31,14 +45,10 @@ class ProfileSerializer(serializers.ModelSerializer):
             'user': {'validators': []},
         }
 
-
     def save(self, validated_data):
         user = validated_data.pop('user')
         instance, created = Profile.objects.update_or_create(user=user, defaults=validated_data)
-        return instance,created
-
-
-
+        return instance, created
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -51,3 +61,8 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
     # TODO: create verifications
 
+
+class IngredientSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Ingredient
+        fields = '__all__'

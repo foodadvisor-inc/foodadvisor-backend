@@ -5,6 +5,8 @@ from rest_framework import views
 from rest_framework.permissions import IsAuthenticated
 
 from api.serializers import *
+from profile.schemas import CurrentUserCategorySchema, CurrentUserIngredientSchema, CurrentUserProfileSchema, \
+    CurrentUserGoalSchema
 
 
 def get_choice(display_value, choices):
@@ -15,18 +17,23 @@ def get_choice(display_value, choices):
 
 
 class CurrentProfile(views.APIView):
-    """Current User Profile endpoint"""
+
+    schema = CurrentUserProfileSchema()
+
     permission_classes = (IsAuthenticated,)
 
-
-
     def get(self, request, format=None):
+        """
+        Get user profile
+        """
 
         profile = Profile.objects.get(user=request.user)
-
         return JsonResponse(ProfileSerializer(profile).data, status=status.HTTP_200_OK, safe=False)
 
     def post(self, request, format=None):
+        """
+         Add profile info
+        """
         profile = request.data
         profile['user'] = request.user.id
         serializer = ProfileSerializer(data=profile, partial=True)
@@ -38,6 +45,9 @@ class CurrentProfile(views.APIView):
             return HttpResponse(status=status.HTTP_204_NO_CONTENT)
 
     def patch(self, request, format=None):
+        """
+        Change profile info
+        """
         profile = request.data
         profile['user'] = request.user.id
         serializer = ProfileSerializer(data=profile, partial=True)
@@ -50,14 +60,22 @@ class CurrentProfile(views.APIView):
 
 
 class CurrentUserGoal(views.APIView):
+
+    schema = CurrentUserGoalSchema()
+
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, format=None):
-
+        """
+        Get user goal
+        """
         profile = Profile.objects.get(user=request.user)
         return JsonResponse(GoalSerializer(profile.goal).data, status=status.HTTP_200_OK, safe=False)
 
     def post(self, request, format=None):
+        """
+        Add user goal
+        """
         profile = request.data
         profile['user'] = request.user.id
         serializer = ProfileSerializer(data=profile, partial=True)
@@ -69,6 +87,9 @@ class CurrentUserGoal(views.APIView):
             return HttpResponse(status=status.HTTP_204_NO_CONTENT)
 
     def patch(self, request, format=None):
+        """
+        Change user goal
+        """
         profile = request.data
         profile['user'] = request.user.id
         serializer = ProfileSerializer(data=profile, partial=True)
@@ -81,9 +102,15 @@ class CurrentUserGoal(views.APIView):
 
 
 class CurrentUserCategory(views.APIView):
+
+    schema = CurrentUserCategorySchema()
+
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, format=None):
+        """
+        Get list of current users categories
+        """
         response = []
         categories = UserCategory.objects.filter(user=request.user)
         for category in categories:
@@ -92,6 +119,10 @@ class CurrentUserCategory(views.APIView):
         return JsonResponse(response, status=status.HTTP_200_OK, safe=False)
 
     def post(self, request, format=None):
+
+        """
+        Add categories for current user. List of added categories looks like ['peanut', 'sugar', 'milk', 'egg'].
+        """
         categories = request.data['categories']
         result = []
         for category in categories:
@@ -105,6 +136,9 @@ class CurrentUserCategory(views.APIView):
         return JsonResponse(result, status=status.HTTP_201_CREATED, safe=False)
 
     def put(self, request, format=None):
+        """
+        Add categories for current user. List of added categories looks like ['peanut', 'sugar', 'milk', 'egg'].
+        """
         categories = request.data['categories']
         result = []
         for category in categories:
@@ -119,8 +153,62 @@ class CurrentUserCategory(views.APIView):
         return JsonResponse(result, status=status.HTTP_201_CREATED, safe=False)
 
     def delete(self, request, format=None):
+
+        """
+        Delete categories for current user. List of categories looks like ['peanut', 'sugar', 'milk', 'egg'].
+        """
         categories = request.data['categories']
         for category in categories:
             ctgr = get_choice(category, CATEGORY_CHOICES)
             ctgr = UserCategory.objects.get(Q(user_id=request.user.id), Q(category=ctgr)).delete()
         return HttpResponse(status=status.HTTP_204_NO_CONTENT)
+
+
+class CurrentUserIngredient(views.APIView):
+
+    schema = CurrentUserIngredientSchema()
+
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, format=None):
+        """
+        Get list of current users ingredients
+        """
+        response = []
+        ingredients = UserIngredient.objects.filter(user=request.user)
+        for ingredient in ingredients:
+            response.append(UserIngredientSerializer(ingredient).data)
+
+        return JsonResponse(response, status=status.HTTP_200_OK, safe=False)
+
+    def post(self, request, format=None):
+        """
+        Add ingredients for current user
+        """
+        ingredients = request.data['ingredients']
+        result = []
+        for ingredient in ingredients:
+            serializer = UserIngredientSerializer(data={'user': request.user.id,
+                                                        'ingredient': ingredient})
+            if (serializer.is_valid(raise_exception=True)):
+                ctgr, created = serializer.save(serializer.validated_data)
+                if created:
+                    result.append(UserIngredientSerializer(ctgr).data)
+
+        return JsonResponse(result, status=status.HTTP_201_CREATED, safe=False)
+
+    def put(self, request, format=None):
+        """
+        Add ingredients for current user
+        """
+        ingredients = request.data['ingredients']
+        result = []
+        for ingredient in ingredients:
+            serializer = UserIngredientSerializer(data={'user': request.user.id,
+                                                        'ingredient': ingredient})
+            if (serializer.is_valid()):
+                ctgr, created = serializer.save(serializer.validated_data)
+                if created:
+                    result.append(UserIngredientSerializer(ctgr).data)
+
+        return JsonResponse(result, status=status.HTTP_201_CREATED, safe=False)
