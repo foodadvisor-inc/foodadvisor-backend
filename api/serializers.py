@@ -62,7 +62,18 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
     # TODO: create verifications
 
 
+class IngredientUsefulEnergySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = IngredientUsefulEnergy
+        fields = ('calories', 'proteins', 'fat', 'carbs')
+        extra_kwargs = {
+            'ingredient': {'validators': []},
+        }
+
+
 class IngredientSerializer(serializers.ModelSerializer):
+    useful_energy = IngredientUsefulEnergySerializer(required=True, source='ingredientusefulenergy')
+
     class Meta:
         model = Ingredient
-        fields = '__all__'
+        fields = ('name', 'category', 'image_url', 'useful_energy')
