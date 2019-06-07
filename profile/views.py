@@ -17,7 +17,6 @@ def get_choice(display_value, choices):
 
 
 class CurrentProfile(views.APIView):
-
     schema = CurrentUserProfileSchema()
 
     permission_classes = (IsAuthenticated,)
@@ -60,7 +59,6 @@ class CurrentProfile(views.APIView):
 
 
 class CurrentUserGoal(views.APIView):
-
     schema = CurrentUserGoalSchema()
 
     permission_classes = (IsAuthenticated,)
@@ -102,7 +100,6 @@ class CurrentUserGoal(views.APIView):
 
 
 class CurrentUserCategory(views.APIView):
-
     schema = CurrentUserCategorySchema()
 
     permission_classes = (IsAuthenticated,)
@@ -165,7 +162,6 @@ class CurrentUserCategory(views.APIView):
 
 
 class CurrentUserIngredient(views.APIView):
-
     schema = CurrentUserIngredientSchema()
 
     permission_classes = (IsAuthenticated,)
@@ -189,13 +185,15 @@ class CurrentUserIngredient(views.APIView):
         result = []
         for ingredient in ingredients:
             serializer = UserIngredientSerializer(data={'user': request.user.id,
-                                                        'ingredient': ingredient})
+                                                        'ingredient': ingredient['id'],
+                                                        'rate': ingredient['rate']})
             if (serializer.is_valid(raise_exception=True)):
                 ctgr, created = serializer.save(serializer.validated_data)
                 if created:
                     result.append(UserIngredientSerializer(ctgr).data)
-
-        return JsonResponse(result, status=status.HTTP_201_CREATED, safe=False)
+        if len(result):
+            return JsonResponse(result, status=status.HTTP_201_CREATED, safe=False)
+        return HttpResponse(status=status.HTTP_204_NO_CONTENT)
 
     def put(self, request, format=None):
         """
@@ -205,10 +203,12 @@ class CurrentUserIngredient(views.APIView):
         result = []
         for ingredient in ingredients:
             serializer = UserIngredientSerializer(data={'user': request.user.id,
-                                                        'ingredient': ingredient})
+                                                        'ingredient': ingredient.id,
+                                                        'rate': ingredient.rate})
             if (serializer.is_valid()):
                 ctgr, created = serializer.save(serializer.validated_data)
                 if created:
                     result.append(UserIngredientSerializer(ctgr).data)
-
-        return JsonResponse(result, status=status.HTTP_201_CREATED, safe=False)
+        if len(result):
+            return JsonResponse(result, status=status.HTTP_201_CREATED, safe=False)
+        return HttpResponse(status=status.HTTP_204_NO_CONTENT)

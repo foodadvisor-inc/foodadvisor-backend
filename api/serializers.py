@@ -32,6 +32,7 @@ class UserIngredientSerializer(serializers.ModelSerializer):
     def save(self, validated_data):
         user = validated_data.pop('user')
         current_ingredient = validated_data.pop('ingredient')
+
         instance, created = UserIngredient.objects.update_or_create(user=user, ingredient=current_ingredient,
                                                                     defaults=validated_data)
         return instance, created

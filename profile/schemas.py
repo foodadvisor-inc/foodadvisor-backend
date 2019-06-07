@@ -48,8 +48,9 @@ class CurrentUserIngredientSchema(AutoSchema):
                     "ingredients",
                     required=True,
                     location="form",
-                    description="List of added ingredient_id: [1,2,4]",
-                    schema=coreschema.Array(items=coreschema.Integer(minimum=1, default=1), description="List of id", )
+                    description="List of added ingredients: [{id:1,rate:100}]",
+                    schema=coreschema.Array(items=coreschema.Object(properties={'id': 1, 'rate': 0}),
+                                            description="List of ingredients", )
                 ),
             ]
 
@@ -71,7 +72,6 @@ class CurrentUserIngredientSchema(AutoSchema):
 class CurrentUserGoalSchema(AutoSchema):
 
     def get_manual_fields(self, path, method):
-
         extra_fields = []
 
         if method == 'POST' or method == 'PUT':
@@ -85,7 +85,6 @@ class CurrentUserGoalSchema(AutoSchema):
                 ),
             ]
 
-
         manual_fields = super().get_manual_fields(path, method)
         return manual_fields + extra_fields
 
@@ -93,7 +92,6 @@ class CurrentUserGoalSchema(AutoSchema):
 class CurrentUserProfileSchema(AutoSchema):
 
     def get_manual_fields(self, path, method):
-
         extra_fields = []
 
         if method == 'POST' or method == 'PATCH':
@@ -129,9 +127,5 @@ class CurrentUserProfileSchema(AutoSchema):
 
             ]
 
-
-
         manual_fields = super().get_manual_fields(path, method)
         return manual_fields + extra_fields
-
-
