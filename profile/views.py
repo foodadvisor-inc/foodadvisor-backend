@@ -184,8 +184,9 @@ class CurrentUserIngredient(views.APIView):
         ingredients = request.data['ingredients']
         result = []
         for ingredient in ingredients:
+            i = IngredientSerializer(Ingredient.objects.get(id=ingredient['id'])).data
             serializer = UserIngredientSerializer(data={'user': request.user.id,
-                                                        'ingredient': ingredient['id'],
+                                                        'ingredient': i,
                                                         'rate': ingredient['rate']})
             if (serializer.is_valid(raise_exception=True)):
                 ctgr, created = serializer.save(serializer.validated_data)
